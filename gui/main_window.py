@@ -16,6 +16,7 @@ from gui.controls import ControlPanel
 from gui.board_display import BoardDisplay
 from gui.info_panel import InfoPanel
 from gui.styles import StyleManager
+from gui.home_page import HomePage
 from config import (
     WINDOW_WIDTH, WINDOW_HEIGHT, PLAYER_HUMAN, PLAYER_AI,
     DEFAULT_MAX_DEPTH
@@ -30,52 +31,67 @@ class MainWindow:
         self.root = tk.Tk()
         self.root.title("Intelligent Cubic Player - 4x4x4 Tic-Tac-Toe")
 
-        # Make window fullscreen
-        self.root.attributes('-fullscreen', True)
-        self.root.state('zoomed')
+        # Do not force fullscreen - allow the window to be resized by the user
+        # (Previously this app forced fullscreen; that behavior was removed.)
+        # Game state placeholders (will be initialized after Home)
+        self.board = None
+        self.rules = None
+        self.evaluator = None
+        self.ai = None
 
-        # Game components
-        self.board = Board()
-        self.rules = GameRules()
-        self.evaluator = HeuristicEvaluator(self.rules)
-        self.ai = AlphaBetaPruning(self.rules, self.evaluator, DEFAULT_MAX_DEPTH)
-
-        # Game state
         self.current_player = PLAYER_HUMAN
         self.game_over = False
         self.ai_thinking = False
         self.move_count = 0
+        self.player_turn_start: Optional[float] = None
 
-        # Setup GUI
-        self._setup_gui()
+        # Show Home Page to choose name/algorithm/heuristic
+        self.home = HomePage(self.root, self._on_start_from_home)
+        # Ensure home fills available window space with no unused margins
+        self.home.pack(fill=tk.BOTH, expand=True)
 
-        # Read player name from control panel entry (inline)
-        self.player_name = self.control_panel.get_player_name()
-
-        # Print welcome message
+        # Print welcome message to console
         self._print_welcome()
-
-        # Update initial status with player name
-        self.info_panel.update_status(f"{self.player_name} turn", StyleManager.COLORS['player'])
 
     def _setup_gui(self):
         """Setup all GUI components"""
+        # Create main game container
+        game_container = tk.Frame(self.root, bg=StyleManager.COLORS['bg_light'])
+        game_container.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
         # Control panel at top
-        # Control panel with name change callback
-        self.control_panel = ControlPanel(self.root, {
+        # Control panel no longer contains a name entry (name is entered on Home)
+        self.control_panel = ControlPanel(game_container, {
             'new_game': self._on_new_game,
-            'exit': self._on_exit,
-            'name_change': self._on_name_change
+            'exit': self._on_exit
         })
         self.control_panel.pack(side=tk.TOP, fill=tk.X)
 
         # Info panel
-        self.info_panel = InfoPanel(self.root)
+        self.info_panel = InfoPanel(game_container)
         self.info_panel.pack(side=tk.TOP, fill=tk.X)
 
         # Board display in center
-        self.board_display = BoardDisplay(self.root, self._on_cell_click)
+        self.board_display = BoardDisplay(game_container, self._on_cell_click)
         self.board_display.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+        # Show which AI algorithm we're using (and heuristic if applicable)
+        try:
+            alg_name = alg_name if 'alg_name' in locals() else getattr(self.ai, 'algorithm', None) or getattr(self.ai, 'name', None) or options.get('algorithm', 'AI')
+        except Exception:
+            alg_name = options.get('algorithm', 'AI')
+
+        heur_text = ''
+        try:
+            # Options may provide heuristic key
+            heur_text = options.get('heuristic', '')
+        except Exception:
+            heur_text = ''
+
+        try:
+            self.board_display.set_ai_info(alg_name, heur_text)
+        except Exception:
+            pass
 
     def _print_welcome(self):
         """Print welcome message to console"""
@@ -91,6 +107,42 @@ class MainWindow:
         print("  * User-Friendly 3D Visualization")
         print("=" * 70 + "\n")
 
+    def _on_start_from_home(self, options: dict):
+        """Callback when Home page Start Game is pressed."""
+        # Initialize game components FIRST
+        self.board = Board()
+        self.rules = GameRules()
+        # HeuristicEvaluator is a utility class with static methods; no instantiation
+        self.evaluator = HeuristicEvaluator
+
+        hv = 2
+        try:
+            hv = 1 if options.get('heuristic', '').startswith('v1') else (3 if options.get('heuristic','').startswith('v3') else 2)
+        except Exception:
+            hv = 2
+
+        alg_name = options.get('algorithm', 'AlphaBetaHeuristic')
+        self.ai = AlphaBetaPruning(self.rules, self.evaluator, DEFAULT_MAX_DEPTH, heuristic_version=hv, algorithm=alg_name)
+        self.player_name = options.get('player_name', 'Player')
+
+        # Setup GUI components now that we have game objects
+        self._setup_gui()
+
+        # Player name is set from Home; control panel no longer contains the entry
+
+        # Update initial info status
+        self.info_panel.update_status(f"{self.player_name} turn", StyleManager.COLORS['player'])
+
+        # Start measuring player's response time from the moment the game starts
+        try:
+            self.player_turn_start = time.time()
+            self.info_panel.update_player_time(0.0)
+        except Exception:
+            self.player_turn_start = None
+
+        # Hide home page LAST (after GUI is packed and visible)
+        self.home.hide()
+
     def _on_cell_click(self, x: int, y: int, z: int):
         """Handle cell click"""
         if self.game_over or self.ai_thinking or self.current_player != PLAYER_HUMAN:
@@ -98,6 +150,15 @@ class MainWindow:
 
         # Try to make move
         if self.board.make_move(x, y, z, PLAYER_HUMAN):
+            # Measure how long the player took to make this move (if start timestamp exists)
+            try:
+                if self.player_turn_start is not None:
+                    player_delta = time.time() - self.player_turn_start
+                else:
+                    player_delta = 0.0
+                self.info_panel.update_player_time(player_delta)
+            except Exception:
+                pass
             self.move_count += 1
             self.info_panel.update_move_count(self.move_count)
             # Update the specific cell across displayed layers
@@ -123,8 +184,15 @@ class MainWindow:
         """AI makes a move (runs in separate thread)"""
         time.sleep(0.3)  # Brief pause for better UX
 
-        # Get best move from AI
-        move = self.ai.get_best_move(self.board)
+        # Measure AI thinking time explicitly here
+        try:
+            ai_start = time.time()
+            move = self.ai.get_best_move(self.board)
+            ai_end = time.time()
+            # store measured time for display
+            self.ai.search_time = (ai_end - ai_start)
+        except Exception:
+            move = self.ai.get_best_move(self.board)
 
         if move:
             x, y, z = move
@@ -152,6 +220,11 @@ class MainWindow:
         self.ai_thinking = False
         self.info_panel.update_status(f"{self.player_name} turn",
                                       StyleManager.COLORS['player'])
+        # Start measuring player's response time now
+        try:
+            self.player_turn_start = time.time()
+        except Exception:
+            self.player_turn_start = None
         self.board_display.set_all_cells_state(True)
 
     def _handle_game_over(self, winner: int):

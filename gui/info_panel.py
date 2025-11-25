@@ -45,6 +45,15 @@ class InfoPanel:
         )
         self.ai_time_label.pack(side=tk.LEFT, padx=10)
 
+        self.player_time_label = tk.Label(
+            stats_frame,
+            text="Player Time: -",
+            font=StyleManager.FONT_NORMAL,
+            bg=StyleManager.COLORS['bg_medium'],
+            fg=StyleManager.COLORS['white']
+        )
+        self.player_time_label.pack(side=tk.LEFT, padx=10)
+
     def pack(self, **kwargs):
         """Pack the frame"""
         self.frame.pack(**kwargs)
@@ -62,3 +71,11 @@ class InfoPanel:
     def update_ai_time(self, time: float):
         """Update AI thinking time"""
         self.ai_time_label.config(text=f"AI Time: {time:.2f}s")
+
+    def update_player_time(self, time: float):
+        """Update player response time"""
+        try:
+            self.player_time_label.config(text=f"Player Time: {time:.2f}s")
+        except Exception:
+            # If formatting fails, fall back to a simple string
+            self.player_time_label.config(text=f"Player Time: {time}")

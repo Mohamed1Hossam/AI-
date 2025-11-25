@@ -24,16 +24,31 @@ class BoardDisplay:
         # Main frame
         self.frame = tk.Frame(parent, bg=StyleManager.COLORS['bg_light'])
         
-        # Container for all layers
+        # Container for AI info and layers; center its contents
         self.layers_frame = tk.Frame(self.frame, bg=StyleManager.COLORS['bg_light'])
-        self.layers_frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
+        self.layers_frame.pack(expand=True, fill=tk.BOTH, padx=6, pady=6)
+
+        # AI info label (shows which algorithm is used)
+        self.ai_info_label = tk.Label(
+            self.layers_frame,
+            text="AI: (not set)",
+            font=StyleManager.FONT_NORMAL,
+            bg=StyleManager.COLORS['bg_light'],
+            fg=StyleManager.COLORS['neutral']
+        )
+        # Place AI info at the top center
+        self.ai_info_label.pack(anchor='n', pady=(8, 6))
         
         # Create frames for each visible layer
         self.layer_frames = []
         self.layer_labels = []
+        # Create a centered container for the horizontal layout of layers
+        self.center_layers = tk.Frame(self.layers_frame, bg=StyleManager.COLORS['bg_light'])
+        self.center_layers.pack(expand=False)
+
         for i in range(self.layers_to_show):
-            layer_frame = tk.Frame(self.layers_frame, bg=StyleManager.COLORS['bg_light'])
-            layer_frame.grid(row=0, column=i, padx=10, pady=10)
+            layer_frame = tk.Frame(self.center_layers, bg=StyleManager.COLORS['bg_light'])
+            layer_frame.grid(row=0, column=i, padx=8, pady=8)
             
             # Layer title
             layer_label = tk.Label(
@@ -75,7 +90,18 @@ class BoardDisplay:
 
     def pack(self, **kwargs):
         """Pack the frame"""
-        self.frame.pack(**kwargs)
+        # Default to center the board display in its parent
+        if 'fill' not in kwargs and 'expand' not in kwargs:
+            self.frame.pack(fill=tk.BOTH, expand=True)
+        else:
+            self.frame.pack(**kwargs)
+
+    def set_ai_info(self, algorithm_name: str, heuristic: str = ""):
+        """Set the AI algorithm information shown on the gameplay page."""
+        text = f"AI: {algorithm_name}"
+        if heuristic:
+            text += f" ({heuristic})"
+        self.ai_info_label.config(text=text)
 
     def set_layer(self, layer: int):
         """Change displayed layer"""
