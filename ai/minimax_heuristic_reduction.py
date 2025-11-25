@@ -43,3 +43,69 @@ def _get_ordered_moves(self, board: Board, player: int) -> List[Tuple[int, int, 
 
     # Return only moves
     return [move for score, move in move_scores]
+
+def _evaluate(self, board, player):
+    if self.heuristic_version == 1:
+        return HeuristicEvaluator.evaluate_v1_basic(board, player)
+    elif self.heuristic_version == 2:
+        return HeuristicEvaluator.evaluate_v2_positional(board, player)
+    else:
+        return HeuristicEvaluator.evaluate_v3_aggressive(board, player)
+
+def _apply_reductions(self, move_scores):
+    """
+    Reduce number of moves using:
+    1. Keep Top-K based on heuristic (Heuristic Reduction)
+    2. Remove symmetric moves (Symmetry Reduction)
+    3. Remove clearly bad moves (Threshold Filtering)
+    """
+    if not move_scores:
+        return move_scores
+
+    # ---------------------------
+    # 1️⃣ Heuristic Top-K Reduction
+    # ---------------------------
+
+    # Sort high → low
+    move_scores.sort(reverse=True, key=lambda x: x[0])
+
+    K = 8  # keep only best 8 moves
+    reduced = move_scores[:K]
+
+    # ---------------------------
+    # 2️⃣ Remove symmetric moves
+    # ---------------------------
+    seen = set()
+    unique_moves = []
+
+    for score, move in reduced:
+        z, x, y = move
+
+        # Generate symmetry signatures
+        sym1 = (z, x, y)
+        sym2 = (z, y, x)        # reflection
+        sym3 = (z, 3 - x, y)    # flip x
+        sym4 = (z, x, 3 - y)    # flip y
+
+        signature = min(sym1, sym2, sym3, sym4)
+
+        if signature not in seen:
+            seen.add(signature)
+            unique_moves.append((score, move))
+
+    reduced = unique_moves
+
+    # ---------------------------
+    # 3️⃣ Threshold Filtering
+    # Remove moves too weak
+    # ---------------------------
+    if len(reduced) > 4:
+        best_score = reduced[0][0]
+        threshold = best_score * 0.5  # keep moves >= 50% of best score
+        reduced = [(s, m) for (s, m) in reduced if s >= threshold]
+
+    # Ensure at least 3 moves remain
+    if len(reduced) < 3:
+        reduced = move_scores[:3]
+
+    return reduced
