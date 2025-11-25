@@ -3,7 +3,7 @@ Board display widget
 """
 
 import tkinter as tk
-from typing import Callable, Optional
+from typing import Callable, Optional, List, Tuple
 from gui.styles import StyleManager
 from config import BOARD_SIZE, BUTTON_WIDTH, BUTTON_HEIGHT
 
@@ -20,6 +20,7 @@ class BoardDisplay:
         self.on_cell_click = on_cell_click
         self.current_layer = 0
         self.layers_to_show = LAYERS_TO_SHOW
+        self.winning_positions = []  # Track winning positions
 
         # Main frame
         self.frame = tk.Frame(parent, bg=StyleManager.COLORS['bg_light'])
@@ -83,11 +84,6 @@ class BoardDisplay:
                     btn.grid(row=x + 1, column=y, padx=2, pady=2)
                     self.buttons[(x, y, layer_idx)] = btn
 
-    def _cell_clicked(self, x: int, y: int):
-        """Handle cell click (deprecated)"""
-        # Kept for compatibility; new buttons pass z directly.
-        self.on_cell_click(x, y, self.current_layer)
-
     def pack(self, **kwargs):
         """Pack the frame"""
         # Default to center the board display in its parent
@@ -103,15 +99,9 @@ class BoardDisplay:
             text += f" ({heuristic})"
         self.ai_info_label.config(text=text)
 
-    def set_layer(self, layer: int):
-        """Change displayed layer"""
-        # Multi-layer view: explicit layer switching is deprecated.
-        return
-
-    def _refresh_grid(self):
-        """Refresh the button grid"""
-        # Not used in multi-layer layout
-        return
+    def set_winning_positions(self, positions: List[Tuple[int, int, int]]):
+        """Set the winning positions to highlight in green"""
+        self.winning_positions = positions if positions else []
 
     def update_cell(self, x: int, y: int, z: int, player: int, enabled: bool = True):
         """
@@ -124,6 +114,9 @@ class BoardDisplay:
         """
         btn = self.buttons.get((x, y, z))
         if btn:
+            # Check if this cell is part of winning line
+            is_winning = (x, y, z) in self.winning_positions
+            
             if player == 0:
                 btn.config(
                     text="",
@@ -131,7 +124,12 @@ class BoardDisplay:
                     state=tk.NORMAL if enabled else tk.DISABLED
                 )
             else:
-                color = StyleManager.get_player_color(player)
+                # Use green for winning cells, otherwise normal player color
+                if is_winning:
+                    color = '#00CC00'  # Bright green for winning line
+                else:
+                    color = StyleManager.get_player_color(player)
+                
                 # Use X for player and O for AI
                 text = "X" if player == 1 else "O"
                 btn.config(

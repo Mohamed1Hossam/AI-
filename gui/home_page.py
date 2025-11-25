@@ -79,58 +79,116 @@ class HomePage:
         )
         alg_title.pack(anchor=tk.W, pady=(0, 15))
 
-        # Algorithm cards container
+        # Algorithm options loaded dynamically from the `ai` folder
         cards_frame = tk.Frame(center_section, bg=StyleManager.COLORS['bg_dark'])
         cards_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.alg_var = tk.StringVar(value="AlphaBetaHeuristic")
+        # Discover AI files in the ai/ directory (relative to project root)
+        import os
+        project_root = os.path.dirname(os.path.dirname(__file__))
+        ai_dir = os.path.join(project_root, 'ai')
+        ai_files = []
+        try:
+            for fname in sorted(os.listdir(ai_dir)):
+                if not fname.endswith('.py'):
+                    continue
+                if fname.startswith('__'):
+                    continue
+                if fname.lower().startswith('temp'):
+                    continue
+                # Expose the module name without .py
+                mod_name = fname[:-3]
+                ai_files.append(mod_name)
+        except Exception:
+            ai_files = []
+
+        # Group discovered AI files into AlphaBeta / Minimax
+        groups = {'AlphaBeta': [], 'Minimax': []}
+        for mod_name in ai_files:
+            ln = mod_name.lower()
+            if 'alphabeta' in ln:
+                groups['AlphaBeta'].append(mod_name)
+            elif 'minimax' in ln:
+                groups['Minimax'].append(mod_name)
+            else:
+                # Ignore unknown/other algorithm files for this grouped UI
+                continue
+
+        # Provide a preferred ordering for known filenames (if present)
+        def _order_group_items(group_name, items):
+            desired = {
+                'AlphaBeta': ['alphabeta', 'alphabeta_heuristic'],
+                'Minimax': ['minimax', 'minimax_heuristic', 'minimax_heuristic_reduction']
+            }
+            if group_name in desired:
+                ordered = [n for n in desired[group_name] if n in items]
+                rest = [n for n in sorted(items) if n not in ordered]
+                return ordered + rest
+            return sorted(items)
+
+        for k in list(groups.keys()):
+            groups[k] = _order_group_items(k, groups[k])
+
+        # Default selection: prefer AlphaBeta, then Minimax
+        default_sel = ''
+        for key in ('AlphaBeta', 'Minimax'):
+            if groups.get(key):
+                if groups[key]:
+                    default_sel = groups[key][0]
+                    break
+        self.alg_var = tk.StringVar(value=default_sel)
+
+        # Render grouped frames: two primary groups side-by-side
         self.cards = []
+        groups_frame = tk.Frame(cards_frame, bg=StyleManager.COLORS['bg_dark'])
+        groups_frame.pack(fill=tk.BOTH, expand=True)
 
-        algorithms = [
-            ("AlphaBeta + Heuristic", "Combines alpha-beta pruning\nwith smart evaluation", "AlphaBetaHeuristic"),
-            ("AlphaBeta Pruning", "Efficient game tree search\nwith branch elimination", "AlphaBeta"),
-            ("Minimax", "Classic minimax algorithm\nwith full depth search", "Minimax")
-        ]
+        left_col = tk.Frame(groups_frame, bg=StyleManager.COLORS['bg_dark'])
+        left_col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 6))
 
-        for alg_name, desc, value in algorithms:
-            card_frame = tk.Frame(cards_frame, bg=StyleManager.COLORS['bg_medium'], relief=tk.RAISED, bd=2, padx=12, pady=12)
-            card_frame.pack(side=tk.LEFT, padx=6, fill=tk.BOTH, expand=True, pady=6)
+        right_col = tk.Frame(groups_frame, bg=StyleManager.COLORS['bg_dark'])
+        right_col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(6, 0))
 
-            card_title = tk.Label(
-                card_frame,
-                text=alg_name,
-                font=("Helvetica", 11, "bold"),
-                bg=StyleManager.COLORS['bg_medium'],
+        # Create a helper to render a large card-style group
+        def _render_card(parent, title, items):
+            # visual card container
+            card_bg = StyleManager.COLORS.get('bg_medium', StyleManager.COLORS['bg_dark'])
+            card = tk.Frame(parent, bg=card_bg, bd=2, relief=tk.RIDGE, padx=12, pady=12)
+            card.pack(fill=tk.BOTH, expand=True, pady=4)
+
+            header = tk.Label(
+                card,
+                text=title,
+                font=("Helvetica", 14, "bold"),
+                bg=card_bg,
                 fg=StyleManager.COLORS['white']
             )
-            card_title.pack(pady=(0, 8))
+            header.pack(anchor='w', pady=(0, 8))
 
-            card_desc = tk.Label(
-                card_frame,
-                text=desc,
-                font=("Helvetica", 9),
-                bg=StyleManager.COLORS['bg_medium'],
-                fg=StyleManager.COLORS['neutral'],
-                wraplength=140,
-                justify=tk.CENTER
-            )
-            card_desc.pack(pady=(0, 12), expand=True)
+            # radio list inside the card
+            for mod_name in items:
+                label = f"{mod_name}.py"
+                rb = tk.Radiobutton(
+                    card,
+                    text=label,
+                    variable=self.alg_var,
+                    value=mod_name,
+                    font=("Helvetica", 12),
+                    bg=card_bg,
+                    fg=StyleManager.COLORS['white'],
+                    selectcolor=StyleManager.COLORS['bg_dark'],
+                    anchor='w',
+                    justify=tk.LEFT,
+                    padx=8,
+                    pady=6,
+                    command=self._update_heuristic_visibility
+                )
+                rb.pack(fill=tk.X, padx=4, pady=3)
+                self.cards.append((mod_name, rb))
 
-            rb = tk.Radiobutton(
-                card_frame,
-                text="Select",
-                variable=self.alg_var,
-                value=value,
-                font=("Helvetica", 10),
-                bg=StyleManager.COLORS['bg_medium'],
-                fg=StyleManager.COLORS['player'],
-                selectcolor=StyleManager.COLORS['bg_medium'],
-                pady=4,
-                command=self._update_heuristic_visibility
-            )
-            rb.pack()
-
-            self.cards.append((card_frame, rb, value))
+        # Render the two main cards
+        _render_card(left_col, 'AlphaBeta', groups['AlphaBeta'])
+        _render_card(right_col, 'Minimax', groups['Minimax'])
 
         # Heuristic selection (only for heuristic algorithm)
         self.heur_frame = tk.Frame(center_section, bg=StyleManager.COLORS['bg_dark'])
@@ -220,7 +278,9 @@ class HomePage:
 
     def _update_heuristic_visibility(self):
         """Show/hide heuristic selection based on algorithm."""
-        if self.alg_var.get() == "AlphaBetaHeuristic":
+        val = (self.alg_var.get() or '').lower()
+        # Show heuristics UI when the selected filename contains 'heuristic'
+        if 'heuristic' in val:
             self.heur_frame.pack(fill=tk.X, pady=(15, 0))
             self.heur_label.config(state=tk.NORMAL, fg=StyleManager.COLORS['white'])
         else:
@@ -271,9 +331,23 @@ TIPS FOR WINNING:
 
     def _on_start(self):
         """Trigger game start with selected options."""
+        selected_mod = (self.alg_var.get() or '').strip()
+        # Map module filenames to adapter-facing algorithm names
+        alg_name = 'Minimax'
+        s = selected_mod.lower()
+        if 'alphabeta' in s:
+            if 'heuristic' in s:
+                alg_name = 'AlphaBetaHeuristic'
+            else:
+                alg_name = 'AlphaBeta'
+        elif 'minimax' in s:
+            alg_name = 'Minimax'
+
         opts = {
             'player_name': self.name_var.get().strip() or "Player",
-            'algorithm': self.alg_var.get(),
+            'algorithm': alg_name,
+            'impl': selected_mod,
             'heuristic': self.heur_var.get()
         }
+
         self.start_callback(opts)
