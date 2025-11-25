@@ -250,7 +250,7 @@ class HomePage:
         # Rules info button (right side - bottom-right corner effect)
         rules_btn = tk.Button(
             bottom_section,
-            text="?  VIEW RULES",
+            text="VIEW RULES",
             command=self._show_rules,
             font=("Helvetica", 10),
             padx=12,
