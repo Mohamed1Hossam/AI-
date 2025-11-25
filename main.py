@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from gui.main_window import MainWindow
 
-
 def main():
     """Main function"""
     print("\n" + "=" * 70)
