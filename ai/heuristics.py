@@ -1,6 +1,4 @@
- 
-
-from game.board import Board  
+ from game.board import Board  
 class HeuristicEvaluator:
     """
     Heuristic Evaluation Functions

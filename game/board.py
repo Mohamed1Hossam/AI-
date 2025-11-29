@@ -1,14 +1,7 @@
-"""
-Game board representation and basic operations
-"""
-
 import numpy as np
 from config import BOARD_SIZE, EMPTY_CELL
 
 class Board:
-    """
-    Represents the 4x4x4 Cubic game board
-    """
 
     def __init__(self):
         """Initialize empty board"""

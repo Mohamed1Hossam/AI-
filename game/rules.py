@@ -1,7 +1,3 @@
-"""
-Game rules and winning condition checking
-"""
-
 import numpy as np
 from config import BOARD_SIZE, PLAYER_HUMAN, PLAYER_AI, EMPTY_CELL
 from game.board import Board

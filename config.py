@@ -1,8 +1,3 @@
-"""
-Configuration file for Cubic Game
-Contains all game settings and AI parameters
-"""
-
 # Game Configuration
 BOARD_SIZE = 4
 PLAYER_HUMAN = 1
@@ -25,8 +20,8 @@ WEIGHT_TWO_IN_ROW = 10
 WEIGHT_ONE_IN_ROW = 1
 
 # GUI Configuration
-WINDOW_WIDTH = 1920  # Full HD width
-WINDOW_HEIGHT = 1080  # Full HD height
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1080 
 BUTTON_WIDTH = 4  # Smaller button width
 BUTTON_HEIGHT = 2  # Smaller button height
 LAYERS_TO_SHOW = 4  # Number of layers to show simultaneously
