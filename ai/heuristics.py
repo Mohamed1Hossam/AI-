@@ -2,14 +2,10 @@
 
 from game.board import Board  
 class HeuristicEvaluator:
-    """
-    Heuristic Evaluation Functions
-    Demonstrates: Strategy Pattern
-    """
+
     
     @staticmethod
     def evaluate_v1_basic(board: Board, player: int) -> int:
-        """Heuristic V1: Basic line counting"""
         score = 0
         opponent = -player
         
@@ -26,10 +22,10 @@ class HeuristicEvaluator:
     
     @staticmethod
     def evaluate_v2_positional(board: Board, player: int) -> int:
-        """Heuristic V2: Positional strategy"""
+
         score = HeuristicEvaluator.evaluate_v1_basic(board, player)
         
-        # Center bonus
+ 
         center = [(1,1,1), (1,1,2), (1,2,1), (1,2,2), 
                   (2,1,1), (2,1,2), (2,2,1), (2,2,2)]
         for pos in center:
@@ -39,7 +35,7 @@ class HeuristicEvaluator:
             elif cell == -player:
                 score -= 10
         
-        # Corner bonus
+   
         corners = [(0,0,0), (0,0,3), (0,3,0), (0,3,3),
                    (3,0,0), (3,0,3), (3,3,0), (3,3,3)]
         for pos in corners:
@@ -53,7 +49,6 @@ class HeuristicEvaluator:
     
     @staticmethod
     def evaluate_v3_aggressive(board: Board, player: int) -> int:
-        """Heuristic V3: Aggressive strategy"""
         score = HeuristicEvaluator.evaluate_v2_positional(board, player)
         opponent = -player
         
