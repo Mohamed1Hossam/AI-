@@ -31,44 +31,7 @@ class ControlPanel:
         )
         title.pack(pady=5)
 
-        # Player name entry (inline in control panel)
-        name_frame = tk.Frame(self.frame, bg=StyleManager.COLORS['bg_dark'])
-        name_frame.pack(pady=(0, 8))
-
-        tk.Label(
-            name_frame,
-            text="Player Name:",
-            font=StyleManager.FONT_NORMAL,
-            bg=StyleManager.COLORS['bg_dark'],
-            fg=StyleManager.COLORS['white']
-        ).pack(side=tk.LEFT, padx=(0, 6))
-
-        self.name_var = tk.StringVar(value="Player")
-        # Create a container frame for entry and button
-        entry_container = tk.Frame(name_frame, bg=StyleManager.COLORS['bg_dark'])
-        entry_container.pack(side=tk.LEFT)
-
-        # Name entry with adjusted height
-        name_entry = tk.Entry(
-            entry_container,
-            textvariable=self.name_var,
-            font=StyleManager.FONT_NORMAL,
-            width=16
-        )
-        name_entry.pack(side=tk.LEFT, ipady=2)  # Add internal padding to match button height
-
-        # Apply name button with matching height
-        apply_btn = tk.Button(
-            entry_container,
-            text="Enter",
-            command=self._on_name_change,
-            font=StyleManager.FONT_NORMAL
-        )
-        StyleManager.configure_button(apply_btn, 'primary')
-        apply_btn.pack(side=tk.LEFT, padx=(5, 0), ipady=2)  # Match the entry height
-
-        # Bind Enter key to both entry and button
-        name_entry.bind('<Return>', lambda e: self._on_name_change())
+        # Player name is entered on the Home screen; remove name entry from control panel
 
         # Button frame
         button_frame = tk.Frame(self.frame, bg=StyleManager.COLORS['bg_dark'])
@@ -103,11 +66,13 @@ class ControlPanel:
     def _on_name_change(self):
         """Handle name change button click"""
         if 'name_change' in self.callbacks:
-            self.callbacks['name_change'](self.get_player_name())
+            # If a name_change callback exists (legacy support), call it with default
+            self.callbacks['name_change']("Player")
 
     def get_player_name(self) -> str:
         """Return the current player name from the entry"""
-        return self.name_var.get().strip() or "Player"
+        # Legacy support: name is now provided from Home page
+        return "Player"
 
 
     def _on_new_game(self):

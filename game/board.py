@@ -60,6 +60,21 @@ class Board:
                         moves.append((x, y, z))
         return moves
 
+    # Compatibility helpers for AI modules / heuristics
+    def get_available_moves(self):
+        """Compatibility: return moves as (z, x, y) for older AI modules."""
+        return [(z, x, y) for (x, y, z) in self.get_valid_moves()]
+
+    def get_winning_lines(self):
+        """Return winning lines used by heuristics (list of (x,y,z) tuples)."""
+        from game.rules import GameRules
+        return GameRules().winning_lines
+
+    def check_winner(self):
+        """Compatibility: quick winner check using GameRules (returns PLAYER_HUMAN/PLAYER_AI/0/None)."""
+        from game.rules import GameRules
+        return GameRules().check_winner(self)
+
     def get_cell(self, x, y, z):
         """Get value at cell"""
         return self.grid[x, y, z]

@@ -14,6 +14,7 @@ class GameRules:
     def __init__(self):
         """Initialize and generate all winning lines"""
         self.winning_lines = self._generate_all_winning_lines()
+        self.last_winning_line = None  # Store the winning line positions
 
     def _generate_all_winning_lines(self):
         """
@@ -78,13 +79,17 @@ class GameRules:
         Returns:
             Player number if winner found, 0 for draw, None if game continues
         """
+        self.last_winning_line = None  # Reset winning line
+        
         for line in self.winning_lines:
             values = [board.get_cell(*pos) for pos in line]
 
             # Check if all positions in line belong to same player
             if all(v == PLAYER_HUMAN for v in values):
+                self.last_winning_line = line  # Store winning line
                 return PLAYER_HUMAN
             elif all(v == PLAYER_AI for v in values):
+                self.last_winning_line = line  # Store winning line
                 return PLAYER_AI
 
         # Check for draw (board full)
@@ -92,6 +97,10 @@ class GameRules:
             return 0  # Draw
 
         return None  # Game continues
+
+    def get_winning_line(self):
+        """Get the last winning line positions"""
+        return self.last_winning_line
 
     def get_line_value(self, board, line):
         """
