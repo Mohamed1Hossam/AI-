@@ -1,20 +1,11 @@
-"""
-Control panel with game controls
-"""
-
 import tkinter as tk
 from typing import Dict, Callable, Union, Any
 from gui.styles import StyleManager
 
 class ControlPanel:
-    """Game control panel"""
 
     def __init__(self, parent: Union[tk.Tk, tk.Frame], callbacks: Dict[str, Callable[..., None]]):
-        """
-        Args:
-            parent: Parent widget
-            callbacks: Dict of callback functions (new_game, exit, name_change)
-        """
+
         self.callbacks = callbacks
 
         # Main frame

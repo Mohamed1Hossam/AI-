@@ -1,13 +1,8 @@
-"""
-Information panel showing game status
-"""
-
 import tkinter as tk
 from gui.styles import StyleManager
 
 
 class InfoPanel:
-    """Displays game information and status"""
 
     def __init__(self, parent):
         self.frame = tk.Frame(parent, bg=StyleManager.COLORS['bg_medium'],

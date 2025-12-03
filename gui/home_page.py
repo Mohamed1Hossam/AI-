@@ -1,17 +1,10 @@
-"""
-Home page UI for selecting player name, viewing rules, and choosing algorithm.
-Modern design with card-based algorithm selection and bottom-right rules button.
-"""
-
 import tkinter as tk
 from tkinter import messagebox
 from typing import Callable, Dict, Any
 from game.rules import GameRules
 from gui.styles import StyleManager
 
-
 class HomePage:
-    """Modern home page with card-based design and better visual hierarchy."""
 
     def __init__(self, parent, start_callback: Callable[[Dict[str, Any]], None]):
         self.parent = parent

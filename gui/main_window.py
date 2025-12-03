@@ -1,7 +1,3 @@
-"""
-Main game window
-"""
-
 import tkinter as tk
 from tkinter import messagebox
 import threading

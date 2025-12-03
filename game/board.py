@@ -1,14 +1,7 @@
-"""
-Game board representation and basic operations
-"""
-
 import numpy as np
 from config import BOARD_SIZE, EMPTY_CELL
 
 class Board:
-    """
-    Represents the 4x4x4 Cubic game board
-    """
 
     def __init__(self):
         """Initialize empty board"""
@@ -21,16 +14,7 @@ class Board:
         self.move_history = []
 
     def make_move(self, x, y, z, player):
-        """
-        Make a move on the board
 
-        Args:
-            x, y, z: Position coordinates
-            player: Player identifier (1 or 2)
-
-        Returns:
-            True if move was successful, False otherwise
-        """
         if not self.is_valid_move(x, y, z):
             return False
 

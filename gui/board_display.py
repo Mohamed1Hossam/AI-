@@ -1,21 +1,12 @@
-"""
-Board display widget
-"""
-
 import tkinter as tk
 from typing import Callable, Optional, List, Tuple
 from gui.styles import StyleManager
 from config import BOARD_SIZE, BUTTON_WIDTH, BUTTON_HEIGHT
 
 class BoardDisplay:
-    """Displays the 4x4x4 game board with multiple layers"""
 
     def __init__(self, parent, on_cell_click: Callable):
-        """
-        Args:
-            parent: Parent widget
-            on_cell_click: Callback for cell click (x, y, z)
-        """
+
         from config import LAYERS_TO_SHOW
         self.on_cell_click = on_cell_click
         self.current_layer = 0

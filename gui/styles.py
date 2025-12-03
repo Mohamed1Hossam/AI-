@@ -1,7 +1,3 @@
-"""
-UI styling and theming
-"""
-
 from typing import Dict, Union, Literal, TypedDict
 import tkinter as tk
 from config import (

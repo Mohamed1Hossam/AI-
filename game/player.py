@@ -1,11 +1,6 @@
-"""
-Player classes
-"""
-
 from abc import ABC, abstractmethod
 
 class Player(ABC):
-    """Abstract base class for players"""
 
     def __init__(self, player_id, name):
         self.player_id = player_id
@@ -18,7 +13,6 @@ class Player(ABC):
 
 
 class HumanPlayer(Player):
-    """Human player implementation"""
 
     def __init__(self, player_id):
         super().__init__(player_id, "Human")
@@ -36,7 +30,6 @@ class HumanPlayer(Player):
 
 
 class AIPlayerInterface(Player):
-    """Interface for AI player"""
 
     def __init__(self, player_id):
         super().__init__(player_id, "AI")
