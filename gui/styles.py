@@ -9,23 +9,19 @@ from config import (
 ColorDict = Dict[str, str]
 ButtonStyle = Literal['normal', 'primary', 'danger', 'cell']
 
-
 class ButtonStyleConfig(TypedDict):
     bg: str
     fg: str
     font: tuple[str, int] | tuple[str, int, str]
 
 class StyleManager:
-    """Manages UI styles and themes"""
 
-    # Font configurations
     FONT_TITLE = ('Arial', 18, 'bold')
     FONT_HEADING = ('Arial', 14, 'bold')
     FONT_NORMAL = ('Arial', 12)
     FONT_BUTTON = ('Arial', 12, 'bold')
     FONT_CELL = ('Arial', 16, 'bold')
 
-    # Color scheme
     COLORS: ColorDict = {
         'bg_dark': COLOR_BG_DARK,
         'bg_medium': COLOR_BG_MEDIUM,
@@ -42,7 +38,6 @@ class StyleManager:
 
     @staticmethod
     def get_player_color(player_id: int) -> str:
-        """Get color for player"""
         if player_id == 1:
             return StyleManager.COLORS['player']
         elif player_id == 2:
@@ -51,7 +46,6 @@ class StyleManager:
 
     @staticmethod
     def configure_button(button: tk.Button, style: ButtonStyle = 'normal') -> None:
-        """Apply style to button"""
         styles: Dict[str, ButtonStyleConfig] = {
             'normal': {
                 'bg': StyleManager.COLORS['white'],

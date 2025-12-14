@@ -1,14 +1,11 @@
 import tkinter as tk
 from gui.styles import StyleManager
 
-
 class InfoPanel:
-
     def __init__(self, parent):
         self.frame = tk.Frame(parent, bg=StyleManager.COLORS['bg_medium'],
                               padx=10, pady=10)
 
-        # Status label
         self.status_label = tk.Label(
             self.frame,
             text="Game Ready - Your Turn!",
@@ -18,7 +15,6 @@ class InfoPanel:
         )
         self.status_label.pack(pady=5)
 
-        # Statistics frame
         stats_frame = tk.Frame(self.frame, bg=StyleManager.COLORS['bg_medium'])
         stats_frame.pack(pady=5)
 
@@ -50,27 +46,21 @@ class InfoPanel:
         self.player_time_label.pack(side=tk.LEFT, padx=10)
 
     def pack(self, **kwargs):
-        """Pack the frame"""
         self.frame.pack(**kwargs)
 
     def update_status(self, text: str, color: str = None):
-        """Update status message"""
         self.status_label.config(text=text)
         if color:
             self.status_label.config(fg=color)
 
     def update_move_count(self, count: int):
-        """Update move counter"""
         self.move_count_label.config(text=f"Moves: {count}")
 
     def update_ai_time(self, time: float):
-        """Update AI thinking time"""
         self.ai_time_label.config(text=f"AI Time: {time:.2f}s")
 
     def update_player_time(self, time: float):
-        """Update player response time"""
         try:
             self.player_time_label.config(text=f"Player Time: {time:.2f}s")
         except Exception:
-            # If formatting fails, fall back to a simple string
             self.player_time_label.config(text=f"Player Time: {time}")
