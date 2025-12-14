@@ -135,6 +135,9 @@ class MainWindow:
                 elif alg_name == 'Minimax':
                     from ai.minimax import MinimaxAI
                     ai_instance = MinimaxAI(DEFAULT_MAX_DEPTH)
+                elif alg_name == 'MinimaxAlphaBeta' or selected_impl == 'minimax_alphabeta':
+                    from ai.minimax_alphabeta import MinimaxAlphaBetaAI
+                    ai_instance = MinimaxAlphaBetaAI(max_depth=DEFAULT_MAX_DEPTH)
             except Exception:
                 ai_instance = None
 
@@ -152,7 +155,8 @@ class MainWindow:
                 'alphabeta': 'AlphaBeta',
                 'minimax': 'Minimax',
                 'minimax_heuristic': 'Minimax (heuristic)',
-                'minimax_heuristic_reduction': 'Minimax (heuristic reduction)'
+                'minimax_heuristic_reduction': 'Minimax (heuristic reduction)',
+                'minimax_alphabeta': 'Minimax+AlphaBeta (Hybrid)'
             }
             alg_label = impl_map.get(impl, options.get('algorithm', 'AI'))
             heur_text = options.get('heuristic', '')
