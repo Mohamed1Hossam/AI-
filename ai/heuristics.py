@@ -1,8 +1,5 @@
- 
-
 from game.board import Board  
 class HeuristicEvaluator:
-
     
     @staticmethod
     def evaluate_v1_basic(board: Board, player: int) -> int:

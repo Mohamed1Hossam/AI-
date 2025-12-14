@@ -3,7 +3,6 @@ from game.board import Board
 from ai.heuristics import HeuristicEvaluator
 
 class AlphaBetaHeuristicAI:
-
     
     def __init__(self, max_depth: int = 3, heuristic_version: int = 2):
         self.max_depth = max_depth

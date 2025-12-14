@@ -4,7 +4,6 @@ from ai.heuristics import HeuristicEvaluator
 from game.board import Board
 
 class MinimaxHeuristicReductionAI:
-
     
     def __init__(self, max_depth: int = 2, heuristic_version: int = 1):
         self.max_depth = max_depth

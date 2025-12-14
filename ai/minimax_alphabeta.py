@@ -3,13 +3,7 @@ from game.board import Board
 from ai.minimax import MinimaxAI
 from ai.alphabeta import AlphaBetaAI
 
-
 class MinimaxAlphaBetaAI:
-    """
-    Hybrid AI:
-    - Uses Minimax when branching factor is large
-    - Switches to Alpha-Beta when the board becomes smaller
-    """
 
     def __init__(
         self,
