@@ -89,9 +89,18 @@ class HomePage:
 
         # Grouping
         groups = {
-            'AlphaBeta': [a for a in algorithms if 'alphabeta' in a],
-            'Minimax': [a for a in algorithms if 'minimax' in a]
+            'AlphaBeta': [],
+            'Minimax': []
         }
+
+        for alg in algorithms:
+            if alg == 'minimax_alphabeta':
+                # Put hybrid ONLY in Minimax
+                groups['Minimax'].append(alg)
+            elif 'alphabeta' in alg:
+                groups['AlphaBeta'].append(alg)
+            elif 'minimax' in alg:
+                groups['Minimax'].append(alg)
 
         self.alg_var = tk.StringVar(value=algorithms[0])
 
