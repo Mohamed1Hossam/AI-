@@ -11,12 +11,10 @@ class BoardDisplay:
         self.on_cell_click = on_cell_click
         self.current_layer = 0
         self.layers_to_show = LAYERS_TO_SHOW
-        self.winning_positions = []  # Track winning positions
+        self.winning_positions = []
 
-        # Main frame
         self.frame = tk.Frame(parent, bg=StyleManager.COLORS['bg_light'])
         
-        # Container for AI info and layers; center its contents
         self.layers_frame = tk.Frame(self.frame, bg=StyleManager.COLORS['bg_light'])
         self.layers_frame.pack(expand=True, fill=tk.BOTH, padx=6, pady=6)
 
@@ -28,13 +26,11 @@ class BoardDisplay:
             bg=StyleManager.COLORS['bg_light'],
             fg=StyleManager.COLORS['neutral']
         )
-        # Place AI info at the top center
         self.ai_info_label.pack(anchor='n', pady=(8, 6))
         
-        # Create frames for each visible layer
         self.layer_frames = []
         self.layer_labels = []
-        # Create a centered container for the horizontal layout of layers
+
         self.center_layers = tk.Frame(self.layers_frame, bg=StyleManager.COLORS['bg_light'])
         self.center_layers.pack(expand=False)
 
@@ -54,12 +50,10 @@ class BoardDisplay:
             self.layer_frames.append(layer_frame)
             self.layer_labels.append(layer_label)
 
-        # Create button grid
         self.buttons = {}
         self._create_grid()
 
     def _create_grid(self):
-        """Create the button grid for all visible layers"""
         for layer_idx in range(self.layers_to_show):
             frame = self.layer_frames[layer_idx]
             for x in range(BOARD_SIZE):
@@ -76,34 +70,23 @@ class BoardDisplay:
                     self.buttons[(x, y, layer_idx)] = btn
 
     def pack(self, **kwargs):
-        """Pack the frame"""
-        # Default to center the board display in its parent
         if 'fill' not in kwargs and 'expand' not in kwargs:
             self.frame.pack(fill=tk.BOTH, expand=True)
         else:
             self.frame.pack(**kwargs)
 
     def set_ai_info(self, algorithm_name: str, heuristic: str = ""):
-        """Set the AI algorithm information shown on the gameplay page."""
         text = f"AI: {algorithm_name}"
         if heuristic:
             text += f" ({heuristic})"
         self.ai_info_label.config(text=text)
 
     def set_winning_positions(self, positions: List[Tuple[int, int, int]]):
-        """Set the winning positions to highlight in green"""
         self.winning_positions = positions if positions else []
 
     def update_cell(self, x: int, y: int, z: int, player: int, enabled: bool = True):
-        """
-        Update a cell's appearance
-
-        Args:
-            x, y, z: Position
-            player: Player ID (0=empty, 1=human, 2=AI)
-            enabled: Whether cell is clickable
-        """
         btn = self.buttons.get((x, y, z))
+        
         if btn:
             # Check if this cell is part of winning line
             is_winning = (x, y, z) in self.winning_positions
@@ -115,13 +98,12 @@ class BoardDisplay:
                     state=tk.NORMAL if enabled else tk.DISABLED
                 )
             else:
-                # Use green for winning cells, otherwise normal player color
+
                 if is_winning:
-                    color = '#00CC00'  # Bright green for winning line
+                    color = '#00CC00'
                 else:
                     color = StyleManager.get_player_color(player)
                 
-                # Use X for player and O for AI
                 text = "X" if player == 1 else "O"
                 btn.config(
                     text=text,
@@ -131,14 +113,12 @@ class BoardDisplay:
                 )
 
     def set_all_cells_state(self, enabled: bool):
-        """Enable or disable all cells"""
         state = tk.NORMAL if enabled else tk.DISABLED
         for btn in self.buttons.values():
             if btn.cget('text') == "":  # Only affect empty cells
                 btn.config(state=state)
 
     def refresh_all_cells(self, board, enabled: bool = True):
-        """Refresh all cells from board state"""
         for z in range(self.layers_to_show):
             for x in range(BOARD_SIZE):
                 for y in range(BOARD_SIZE):

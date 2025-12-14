@@ -5,10 +5,7 @@ from game.rules import GameRules
 from gui.styles import StyleManager
 import os
 
-
 class HomePage:
-
-    # Only these files are valid AI opponents
     VALID_ALGORITHMS = {
         'alphabeta',
         'alphabeta_heuristic',

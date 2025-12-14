@@ -19,16 +19,11 @@ from config import (
     DEFAULT_MAX_DEPTH
 )
 
-
 class MainWindow:
-    """Main application window"""
-
     def __init__(self):
-        # Create main window
         self.root = tk.Tk()
         self.root.title("Intelligent Cubic Player - 4x4x4 Tic-Tac-Toe")
 
-        # Game state placeholders (will be initialized after Home)
         self.board = None
         self.rules = None
         self.evaluator = None
@@ -42,26 +37,19 @@ class MainWindow:
 
         # Show Home Page to choose name/algorithm/heuristic
         self.home = HomePage(self.root, self._on_start_from_home)
-        # Ensure home fills available window space with no unused margins
+
         self.home.pack(fill=tk.BOTH, expand=True)
 
-        # Print welcome message to console
-        self._print_welcome()
-
     def _setup_gui(self):
-        """Setup all GUI components"""
-        # Create main game container
         game_container = tk.Frame(self.root, bg=StyleManager.COLORS['bg_light'])
         game_container.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
-        # Control panel at top
         self.control_panel = ControlPanel(game_container, {
             'new_game': self._on_new_game,
             'exit': self._on_exit
         })
         self.control_panel.pack(side=tk.TOP, fill=tk.X)
 
-        # Info panel
         self.info_panel = InfoPanel(game_container)
         self.info_panel.pack(side=tk.TOP, fill=tk.X)
 
@@ -69,23 +57,7 @@ class MainWindow:
         self.board_display = BoardDisplay(game_container, self._on_cell_click)
         self.board_display.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
-    def _print_welcome(self):
-        """Print welcome message to console"""
-        print("\n" + "=" * 70)
-        print("INTELLIGENT CUBIC PLAYER - 4x4x4 TIC-TAC-TOE")
-        print("=" * 70)
-        print("\nProject Features:")
-        print("  * Minimax Algorithm with Alpha-Beta Pruning")
-        print("  * Advanced Heuristic Evaluation (76 winning lines)")
-        print("  * Transposition Table for Position Caching")
-        print("  * Move Ordering for Better Pruning")
-        print("  * Adaptive Search Depth")
-        print("  * User-Friendly 3D Visualization")
-        print("=" * 70 + "\n")
-
     def _on_start_from_home(self, options: dict):
-        """Callback when Home page Start Game is pressed."""
-        # Initialize game components FIRST
         self.board = Board()
         self.rules = GameRules()
         self.evaluator = HeuristicEvaluator
@@ -99,7 +71,6 @@ class MainWindow:
         selected_impl = options.get('impl', '')
         alg_name = options.get('algorithm', 'AlphaBetaHeuristic')
 
-        # Try to dynamically import the selected implementation from ai.<impl>
         ai_instance = None
         if selected_impl:
             try:
@@ -126,7 +97,6 @@ class MainWindow:
             except Exception:
                 ai_instance = None
 
-        # Fallback: instantiate by algorithm name using known modules
         if ai_instance is None:
             try:
                 if alg_name == 'AlphaBetaHeuristic' or alg_name == 'AlphaBeta':
@@ -144,10 +114,8 @@ class MainWindow:
         self.ai = ai_instance
         self.player_name = options.get('player_name', 'Player')
 
-        # Setup GUI components now that we have game objects
         self._setup_gui()
 
-        # Set AI label in the board display using provided options
         try:
             impl = options.get('impl', '')
             impl_map = {
@@ -177,7 +145,6 @@ class MainWindow:
         except Exception:
             self.player_turn_start = None
 
-        # Hide home page LAST
         self.home.hide()
 
     def _on_cell_click(self, x: int, y: int, z: int):
@@ -218,8 +185,7 @@ class MainWindow:
             threading.Thread(target=self._ai_make_move, daemon=True).start()
 
     def _ai_make_move(self):
-        """AI makes a move (runs in separate thread)"""
-        time.sleep(0.3)  # Brief pause for better UX
+        time.sleep(0.3)
 
         # Measure AI thinking time
         try:
@@ -235,7 +201,6 @@ class MainWindow:
             self.board.make_move(x, y, z, PLAYER_AI)
             self.move_count += 1
 
-            # Update GUI in main thread
             self.root.after(0, lambda: self._after_ai_move(x, y, z))
 
     def _after_ai_move(self, x: int, y: int, z: int):
@@ -263,7 +228,6 @@ class MainWindow:
         self.board_display.set_all_cells_state(True)
 
     def _handle_game_over(self, winner: int):
-        """Handle game over"""
         self.game_over = True
         self.board_display.set_all_cells_state(False)
 
@@ -313,10 +277,8 @@ class MainWindow:
         print("=" * 70 + "\n")
 
     def _on_exit(self):
-        """Exit application"""
         if messagebox.askokcancel("Exit", "Are you sure you want to exit?"):
             self.root.quit()
 
     def run(self):
-        """Run the application"""
         self.root.mainloop()
