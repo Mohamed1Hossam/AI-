@@ -5,7 +5,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gui.main_window import MainWindow
 
 def main():
-    """Main function"""
     print("\n" + "=" * 70)
     print(" INTELLIGENT CUBIC PLAYER ".center(70))
     print(" 4x4x4 Tic-Tac-Toe with Minimax & Alpha-Beta Pruning ".center(70))
