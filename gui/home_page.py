@@ -215,9 +215,45 @@ class HomePage:
 
     def _show_rules(self):
         rules = GameRules()
+
+        rules_text = f"""
+    4×4×4 TIC-TAC-TOE – GAME RULES
+    ============================
+
+    OBJECTIVE
+    ---------
+    Be the first player to place FOUR marks in a straight line.
+
+    BOARD
+    -----
+    • 4 layers, each a 4×4 grid
+    • 64 total cells (4×4×4)
+    • Each move places one mark in an empty cell
+
+    PLAYERS
+    -------
+    • Human: X
+    • AI: O
+    • Players alternate turns
+
+    WINNING LINES
+    -------------
+    A winning line can be formed in any direction:
+    • Rows or columns within a layer
+    • Vertical lines across layers
+    • Diagonals in a 2D plane
+    • Diagonals through the 3D cube
+
+    There are {len(rules.winning_lines)} possible winning lines.
+
+    DRAW
+    ----
+    If all cells are filled and no line is completed,
+    the game ends in a draw.
+    """
         messagebox.showinfo(
-            "Game Rules",
-            f"4×4×4 Tic-Tac-Toe\nWinning lines: {len(rules.winning_lines)}"
+            "Game Rules – 4×4×4 Tic-Tac-Toe",
+            rules_text
         )
 
     def _on_start(self):
