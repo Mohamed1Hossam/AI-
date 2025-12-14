@@ -1,14 +1,7 @@
-"""
-Game board representation and basic operations
-"""
-
 import numpy as np
 from config import BOARD_SIZE, EMPTY_CELL
 
 class Board:
-    """
-    Represents the 4x4x4 Cubic game board
-    """
 
     def __init__(self):
         """Initialize empty board"""
@@ -21,16 +14,7 @@ class Board:
         self.move_history = []
 
     def make_move(self, x, y, z, player):
-        """
-        Make a move on the board
 
-        Args:
-            x, y, z: Position coordinates
-            player: Player identifier (1 or 2)
-
-        Returns:
-            True if move was successful, False otherwise
-        """
         if not self.is_valid_move(x, y, z):
             return False
 
@@ -59,6 +43,21 @@ class Board:
                     if self.grid[x, y, z] == EMPTY_CELL:
                         moves.append((x, y, z))
         return moves
+
+    # Compatibility helpers for AI modules / heuristics
+    def get_available_moves(self):
+        """Compatibility: return moves as (z, x, y) for older AI modules."""
+        return [(z, x, y) for (x, y, z) in self.get_valid_moves()]
+
+    def get_winning_lines(self):
+        """Return winning lines used by heuristics (list of (x,y,z) tuples)."""
+        from game.rules import GameRules
+        return GameRules().winning_lines
+
+    def check_winner(self):
+        """Compatibility: quick winner check using GameRules (returns PLAYER_HUMAN/PLAYER_AI/0/None)."""
+        from game.rules import GameRules
+        return GameRules().check_winner(self)
 
     def get_cell(self, x, y, z):
         """Get value at cell"""

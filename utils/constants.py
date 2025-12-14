@@ -1,8 +1,3 @@
-"""
-Constants for the Cubic game
-"""
-
-# Direction vectors for checking winning lines
 DIRECTIONS = {
     'rows': [(1, 0, 0)],
     'columns': [(0, 1, 0)],

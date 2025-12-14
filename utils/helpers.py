@@ -1,7 +1,3 @@
-"""
-Helper functions for the Cubic game
-"""
-
 import numpy as np
 from typing import Tuple, List
 from config import BOARD_SIZE

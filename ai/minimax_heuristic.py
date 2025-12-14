@@ -52,7 +52,7 @@ class MinimaxHeuristicAI:
         
         for z, x, y in search_moves:
             board.make_move(x, y, z, player)
-            score = self._minimax(board, depth - 1, False, player, -sys.maxsize, sys.maxsize)
+            score = self._minimax(board, depth - 1, False, player)
             board.undo_move(x, y, z)
             
             if score > best_score:
@@ -70,44 +70,35 @@ class MinimaxHeuristicAI:
         else:
             return HeuristicEvaluator.evaluate_v3_aggressive(board, player)
     
-    def _minimax(self, board: Board, depth: int, is_max: bool, player: int, alpha: int, beta: int) -> int:
-       
-      
-        winner = board.check_winner()
-        if winner == player:
-            return 1000 + depth
-        elif winner is not None and winner != 0:
-            return -1000 - depth
-        elif board.is_full() or depth == 0:
-            return self._evaluate(board, player)
-        
-        opponent = 3 - player
-        moves = board.get_available_moves()
-  
-        if depth <= 2:
-            moves = moves[:15]
-        
-        if is_max:
-            best_score = -sys.maxsize
-            for z, x, y in moves:
-                board.make_move(x, y, z, player)
-                score = self._minimax(board, depth - 1, False, player, alpha, beta)
-                board.undo_move(x, y, z)
-                
-                best_score = max(best_score, score)
-                alpha = max(alpha, score)
-                if beta <= alpha:
-                    break  # Beta cutoff
-            return best_score
-        else:
-            best_score = sys.maxsize
-            for z, x, y in moves:
-                board.make_move(x, y, z, opponent)
-                score = self._minimax(board, depth - 1, True, player, alpha, beta)
-                board.undo_move(x, y, z)
-                
-                best_score = min(best_score, score)
-                beta = min(beta, score)
-                if beta <= alpha:
-                    break  # Alpha cutoff
-            return best_score
+    def _minimax(self, board: Board, depth: int, is_max: bool, player: int) -> int:
+        # Check terminal states
+     winner = board.check_winner()
+     if winner == player:
+        return 1000 + depth
+     elif winner is not None and winner != 0:
+        return -1000 - depth
+     elif board.is_full() or depth == 0:
+        return self._evaluate(board, player)  # Use heuristic here
+    
+     opponent = 3 - player
+     moves = board.get_available_moves()
+    
+     if depth <= 2:
+        moves = moves[:15]
+    
+     if is_max:
+        best_score = -sys.maxsize
+        for z, x, y in moves:
+            board.make_move(x, y, z, player)
+            score = self._minimax(board, depth - 1, False, player)  # No alpha/beta
+            board.undo_move(x, y, z)
+            best_score = max(best_score, score)
+        return best_score
+     else:
+        best_score = sys.maxsize
+        for z, x, y in moves:
+            board.make_move(x, y, z, opponent)
+            score = self._minimax(board, depth - 1, True, player)  # No alpha/beta
+            board.undo_move(x, y, z)
+            best_score = min(best_score, score)
+        return best_score

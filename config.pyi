@@ -1,5 +1,3 @@
-"""Type hints for config.py"""
-
 COLOR_BG_DARK: str
 COLOR_BG_MEDIUM: str
 COLOR_BG_LIGHT: str

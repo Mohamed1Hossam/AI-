@@ -1,27 +1,15 @@
-"""
-Game rules and winning condition checking
-"""
-
 import numpy as np
 from config import BOARD_SIZE, PLAYER_HUMAN, PLAYER_AI, EMPTY_CELL
 from game.board import Board
 
 class GameRules:
-    """
-    Handles game rules and winning conditions for Cubic
-    """
 
     def __init__(self):
         """Initialize and generate all winning lines"""
         self.winning_lines = self._generate_all_winning_lines()
+        self.last_winning_line = None  # Store the winning line positions
 
     def _generate_all_winning_lines(self):
-        """
-        Generate all 76 possible winning lines in the 4x4x4 cube
-
-        Returns:
-            List of winning lines, where each line is a list of 4 positions
-        """
         lines = []
 
         # 1. Rows (parallel to x-axis): 16 lines
@@ -69,22 +57,18 @@ class GameRules:
         return lines
 
     def check_winner(self, board):
-        """
-        Check if there's a winner
 
-        Args:
-            board: Current board state
-
-        Returns:
-            Player number if winner found, 0 for draw, None if game continues
-        """
+        self.last_winning_line = None  # Reset winning line
+        
         for line in self.winning_lines:
             values = [board.get_cell(*pos) for pos in line]
 
             # Check if all positions in line belong to same player
             if all(v == PLAYER_HUMAN for v in values):
+                self.last_winning_line = line  # Store winning line
                 return PLAYER_HUMAN
             elif all(v == PLAYER_AI for v in values):
+                self.last_winning_line = line  # Store winning line
                 return PLAYER_AI
 
         # Check for draw (board full)
@@ -93,17 +77,12 @@ class GameRules:
 
         return None  # Game continues
 
+    def get_winning_line(self):
+        """Get the last winning line positions"""
+        return self.last_winning_line
+
     def get_line_value(self, board, line):
-        """
-        Analyze a line and return counts
 
-        Args:
-            board: Current board state
-            line: List of positions forming a line
-
-        Returns:
-            Tuple of (player_count, ai_count, empty_count)
-        """
         values = [board.get_cell(*pos) for pos in line]
         player_count = values.count(PLAYER_HUMAN)
         ai_count = values.count(PLAYER_AI)
@@ -112,16 +91,7 @@ class GameRules:
         return (player_count, ai_count, empty_count)
 
     def is_line_blocked(self, board, line):
-        """
-        Check if a line is blocked (has pieces from both players)
 
-        Args:
-            board: Current board state
-            line: List of positions forming a line
-
-        Returns:
-            True if line is blocked, False otherwise
-        """
         player_count, ai_count, _ = self.get_line_value(board, line)
         return player_count > 0 and ai_count > 0
 
