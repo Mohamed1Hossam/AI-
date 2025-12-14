@@ -1,4 +1,6 @@
-    def _get_ordered_moves(self, board: Board, player: int) -> List[Tuple[int, int, int]]:
+    
+    
+def _get_ordered_moves(self, board: Board, player: int) -> List[Tuple[int, int, int]]:
         """Order moves by heuristic value for better performance"""
         moves = board.get_available_moves()
         

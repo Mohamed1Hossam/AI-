@@ -4,7 +4,7 @@ from ai.heuristics import HeuristicEvaluator
 from game.board import Board
 
 class MinimaxHeuristicReductionAI:
-    """Minimax with Heuristic Evaluation and Move Reduction"""
+
     
     def __init__(self, max_depth: int = 2, heuristic_version: int = 1):
         self.max_depth = max_depth
@@ -14,7 +14,7 @@ class MinimaxHeuristicReductionAI:
         self.search_time = 0.0
 
     def get_best_move(self, board: Board, player: int = 2) -> Tuple[int, int, int]:
-        """Get best move for the AI player"""
+    
         self.nodes_evaluated = 0
         
         available_moves = board.get_available_moves()
@@ -77,7 +77,7 @@ class MinimaxHeuristicReductionAI:
         return (best_move[1], best_move[2], best_move[0])
 
     def clear_cache(self):
-        """Clear any caches (for compatibility)"""
+     
         pass
 
     def _get_ordered_moves(self, board: Board, player: int) -> List[Tuple[int, int, int]]:
