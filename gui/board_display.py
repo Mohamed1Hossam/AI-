@@ -19,14 +19,14 @@ class BoardDisplay:
         self.layers_frame.pack(expand=True, fill=tk.BOTH, padx=6, pady=6)
 
         # AI info label (shows which algorithm is used)
-        self.ai_info_label = tk.Label(
-            self.layers_frame,
-            text="AI: (not set)",
-            font=StyleManager.FONT_NORMAL,
-            bg=StyleManager.COLORS['bg_light'],
-            fg=StyleManager.COLORS['neutral']
-        )
-        self.ai_info_label.pack(anchor='n', pady=(8, 6))
+        # self.ai_info_label = tk.Label(
+        #     self.layers_frame,
+        #     text="AI: (not set)",
+        #     font=StyleManager.FONT_NORMAL,
+        #     bg=StyleManager.COLORS['bg_light'],
+        #     fg=StyleManager.COLORS['neutral']
+        # )
+        # self.ai_info_label.pack(anchor='n', pady=(8, 6))
         
         self.layer_frames = []
         self.layer_labels = []
@@ -75,11 +75,11 @@ class BoardDisplay:
         else:
             self.frame.pack(**kwargs)
 
-    def set_ai_info(self, algorithm_name: str, heuristic: str = ""):
-        text = f"AI: {algorithm_name}"
-        if heuristic:
-            text += f" ({heuristic})"
-        self.ai_info_label.config(text=text)
+    # def set_ai_info(self, algorithm_name: str, heuristic: str = ""):
+    #     text = f"AI: {algorithm_name}"
+    #     if heuristic:
+    #         text += f" ({heuristic})"
+    #     self.ai_info_label.config(text=text)
 
     def set_winning_positions(self, positions: List[Tuple[int, int, int]]):
         self.winning_positions = positions if positions else []
