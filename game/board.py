@@ -44,7 +44,6 @@ class Board:
                         moves.append((x, y, z))
         return moves
 
-    # Compatibility helpers for AI modules / heuristics
     def get_available_moves(self):
         """Compatibility: return moves as (z, x, y) for older AI modules."""
         return [(z, x, y) for (x, y, z) in self.get_valid_moves()]
