@@ -5,9 +5,8 @@ from game.board import Board
 class GameRules:
 
     def __init__(self):
-        """Initialize and generate all winning lines"""
         self.winning_lines = self._generate_all_winning_lines()
-        self.last_winning_line = None  # Store the winning line positions
+        self.last_winning_line = None
 
     def _generate_all_winning_lines(self):
         lines = []
@@ -29,23 +28,17 @@ class GameRules:
 
         # 4. Diagonals in XY planes: 8 lines
         for z in range(BOARD_SIZE):
-            # Main diagonal
             lines.append([(i, i, z) for i in range(BOARD_SIZE)])
-            # Anti-diagonal
             lines.append([(i, BOARD_SIZE - 1 - i, z) for i in range(BOARD_SIZE)])
 
         # 5. Diagonals in XZ planes: 8 lines
         for y in range(BOARD_SIZE):
-            # Main diagonal
             lines.append([(i, y, i) for i in range(BOARD_SIZE)])
-            # Anti-diagonal
             lines.append([(i, y, BOARD_SIZE - 1 - i) for i in range(BOARD_SIZE)])
 
         # 6. Diagonals in YZ planes: 8 lines
         for x in range(BOARD_SIZE):
-            # Main diagonal
             lines.append([(x, i, i) for i in range(BOARD_SIZE)])
-            # Anti-diagonal
             lines.append([(x, i, BOARD_SIZE - 1 - i) for i in range(BOARD_SIZE)])
 
         # 7. Space diagonals (through the cube): 4 lines
@@ -58,24 +51,23 @@ class GameRules:
 
     def check_winner(self, board):
 
-        self.last_winning_line = None  # Reset winning line
+        self.last_winning_line = None 
         
         for line in self.winning_lines:
             values = [board.get_cell(*pos) for pos in line]
 
-            # Check if all positions in line belong to same player
             if all(v == PLAYER_HUMAN for v in values):
-                self.last_winning_line = line  # Store winning line
+                self.last_winning_line = line 
                 return PLAYER_HUMAN
             elif all(v == PLAYER_AI for v in values):
-                self.last_winning_line = line  # Store winning line
+                self.last_winning_line = line 
                 return PLAYER_AI
 
-        # Check for draw (board full)
-        if board.is_full():
-            return 0  # Draw
 
-        return None  # Game continues
+        if board.is_full():
+            return 0  
+
+        return None 
 
     def get_winning_line(self):
         """Get the last winning line positions"""

@@ -43,7 +43,7 @@ class AlphaBetaAI:
         max_moves = min(25, num_moves)
         search_moves = available_moves[:max_moves]
         
-        # Find best move using alpha-beta
+      
         best_score = -999999
         best_move = search_moves[0]
         alpha = -999999
@@ -88,9 +88,9 @@ class AlphaBetaAI:
                 
                 max_score = max(max_score, score)
                 alpha = max(alpha, score)
-                
+                #almin ma4 hayasma7 b value akbar man kada
                 if beta <= alpha:
-                    break  # Beta cutoff
+                    break  
             return max_score
         else:
             min_score = 999999
@@ -101,7 +101,7 @@ class AlphaBetaAI:
                 
                 min_score = min(min_score, score)
                 beta = min(beta, score)
-                
+                #almax 3ando value a7san man da f ma4 ha5do
                 if beta <= alpha:
-                    break  # Alpha cutoff
+                    break  
             return min_score
